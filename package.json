@@ -1,0 +1,17 @@
+{
+  "name": "realestate-map",
+  "version": "1.0.0",
+  "description": "A map for analysis ",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "test": "1=1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "node-fetch": "^3.3.2"
+  }
+}

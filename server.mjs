@@ -37,21 +37,35 @@ app.get('/proxy', async (req, res) => {
 
 // API endpoint to fetch property data
 app.get('/api/property', async (req, res) => {
-    const address = req.query.address;
-    if (!address || typeof address !== 'string') {
-        return res.status(400).json({ error: 'Valid address is required' });
+    const { lat, lng } = req.query;
+    console.log('Received lat:', lat, 'lng:', lng); // Add this line for debugging
+    if (!lat || !lng) {
+        console.error('Missing lat or lng parameter');
+        return res.status(400).json({ error: 'Missing lat or lng parameter' });
     }
-    const url = `https://services.arcgis.com/8Pc9XBTAsYuxx9Ny/arcgis/rest/services/PaGISView_gdb/FeatureServer/0/query?outFields=*&where=UPPER(address)%20LIKE%20UPPER('%25${address}%25')&f=geojson`;
 
     try {
-        const response = await fetch(url);
-        const data = await response.json();
-        res.json(data);
+        // Fetch property data based on lat and lng
+        const propertyData = await fetchPropertyData(lat, lng);
+        res.json(propertyData);
     } catch (error) {
         console.error('Error fetching property data:', error);
         res.status(500).json({ error: 'Failed to fetch property data' });
     }
 });
+
+async function fetchPropertyData(lat, lng) {
+    // Implement your logic to fetch property data based on lat and lng
+    // This is just a placeholder implementation
+    return {
+        lat,
+        lng,
+        properties: [
+            { id: 1, name: 'Property 1', lat, lng },
+            { id: 2, name: 'Property 2', lat, lng }
+        ]
+    };
+}
 
 // API endpoint to fetch Walk Score
 app.get('/api/walkscore', async (req, res) => {
@@ -84,7 +98,15 @@ function isValidCoordinate(lat, lon) {
 
 // API endpoint to fetch Mapbox token
 app.get('/api/mapbox-token', (req, res) => {
-    res.json({ token: process.env.MAPBOX_ACCESS_TOKEN });
+    const token = process.env.MAPBOX_ACCESS_TOKEN;
+    console.log('MAPBOX_ACCESS_TOKEN:', token); // For debugging
+
+    if (!token) {
+        console.error('MAPBOX_ACCESS_TOKEN is not set in environment variables');
+        return res.status(500).json({ error: 'Mapbox token not configured' });
+    }
+
+    res.json({ token });
 });
 
 app.listen(port, () => {
